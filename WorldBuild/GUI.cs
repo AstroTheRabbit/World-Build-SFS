@@ -8,27 +8,27 @@ using SFS.Parts;
 using SFS.Builds;
 using SFS.Career;
 using SFS.UI.ModGUI;
-using SFS.Translations;
 using SFS.Parts.Modules;
+using Button = SFS.UI.Button;
 using static SFS.Builds.PickGridUI;
-using Button = SFS.UI.ModGUI.Button;
-using WorldBuild.Patches;
+using ModButton = SFS.UI.ModGUI.Button;
+using SFS.Input;
 
 namespace WorldBuild.GUI
 {
     public static class PartPickerUI
     {
         public static Transform GUIHolder;
-        public static readonly Vector2Int size_main = new Vector2Int(500, 1000);
+        public static readonly Vector2Int size_main = new Vector2Int(400, 1000);
         public static readonly Vector2Int size_categories = new Vector2Int(240, 950);
-        public static readonly Vector2Int size_parts = new Vector2Int(240, 950);
+        public static readonly Vector2Int size_parts = new Vector2Int(140, 950);
         public static readonly int id_main = Builder.GetRandomID();
         public static readonly int id_categories = Builder.GetRandomID();
         public static readonly int id_parts = Builder.GetRandomID();
         public static ClosableWindow window_main;
         public static Window window_categories;
         public static Window window_parts;
-        public static Button button_selectedCategory = null;
+        public static ModButton button_selectedCategory = null;
 
         public static CategoryParts[] pickCategories = null;
         public static CategoryParts selectedCategory = null;
@@ -63,6 +63,7 @@ namespace WorldBuild.GUI
             if (createdPartsHolder == null)
             {
                 createdPartsHolder = new GameObject("World Build - Created Parts Holder").transform;
+                Object.DontDestroyOnLoad(createdPartsHolder.gameObject);
             }
 
             DestroyUI();
@@ -79,7 +80,7 @@ namespace WorldBuild.GUI
                 titleText: "World Build"
             );
             window_main.RegisterPermanentSaving($"{Main.main.ModNameID}.pickgrid");
-            window_main.CreateLayoutGroup(Type.Horizontal, TextAnchor.UpperCenter, 10f, new RectOffset(5, 5, 5, 5));
+            window_main.CreateLayoutGroup(Type.Horizontal, TextAnchor.UpperCenter, 5f, new RectOffset(5, 5, 5, 5));
             CreateCategoriesUI();
             CreatePartsUI();
         }
@@ -105,7 +106,7 @@ namespace WorldBuild.GUI
 
             foreach (CategoryParts category in pickCategories)
             {
-                Button button = null;
+                ModButton button = null;
                 button = Builder.CreateButton
                 (
                     window_categories,
@@ -155,14 +156,21 @@ namespace WorldBuild.GUI
             {
                 if (owned)
                 {
-                    if (!createdParts.TryGetValue(variant, out Part part))
+                    if (!createdParts.TryGetValue(variant, out Part part) || part == null)
                     {
                         part = PartsLoader.CreatePart(variant, true);
                         part.transform.parent = createdPartsHolder;
                         part.gameObject.SetActive(false);
                         createdParts.Add(variant, part);
                     }
-                    CreatePartIcon(window_parts, part);
+                    Button button = CreatePartIcon(window_parts, part);
+                    button.onHold += (OnInputStayData data) =>
+                    {
+                        if (data.inputType == InputType.MouseLeft)
+                            Manager.CreateNewPart(variant, data.position.World(0f));
+                    };
+                    button.onClick += () => Debug.Log("TODO: Part info box.");
+                    button.onRightClick += () => Debug.Log("TODO: Part info box.");
                 }
             }
         }
@@ -171,6 +179,13 @@ namespace WorldBuild.GUI
         {
             if (GUIHolder != null)
                 Object.Destroy(GUIHolder.gameObject);
+        }
+
+        public static void DestroyCreatedParts()
+        {
+            createdParts.Clear();
+            if (createdPartsHolder != null)
+                Object.Destroy(createdPartsHolder.gameObject);
         }
 
         // ? Derived from `SFS.Builds.PickGridUI.Initialize`.
@@ -207,7 +222,7 @@ namespace WorldBuild.GUI
             return dictionary.Values.OrderBy((CategoryParts picklist) => categoryOrder.IndexOf(picklist.tag)).ToArray();
         }
 
-        public static void CreatePartIcon(Transform holder, Part part)
+        static Button CreatePartIcon(Transform holder, Part part)
         {
             GameObject go = new GameObject
             (
@@ -218,10 +233,9 @@ namespace WorldBuild.GUI
             );
             go.transform.SetParent(holder, false);
 
-            SFS.UI.Button button = go.AddComponent<SFS.UI.Button>();
+            Button button = go.AddComponent<Button>();
             button.clickEvent = new SFS.UI.ClickUnityEvent();
             button.holdEvent = new SFS.UI.HoldUnityEvent();
-            button.onClick += () => Debug.Log("TODO: !!!CLICKED!!!");
 
             RawImage img = go.GetComponent<RawImage>();
             part.gameObject.SetActive(true);
@@ -230,6 +244,8 @@ namespace WorldBuild.GUI
 
             RectTransform rect = go.GetComponent<RectTransform>();
             rect.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, rect.rect.width * (size.y / size.x));
+
+            return button;
         }
     }
 }

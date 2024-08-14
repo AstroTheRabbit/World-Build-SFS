@@ -6,7 +6,7 @@ using SFS.IO;
 using ModLoader;
 using ModLoader.Helpers;
 using WorldBuild.GUI;
-using UnityEngine.SceneManagement;
+using WorldBuild.Settings;
 
 namespace WorldBuild
 {
@@ -31,7 +31,10 @@ namespace WorldBuild
 
         public override void Load()
         {
-            SceneHelper.OnWorldSceneLoaded += PartPickerUI.CreateUI;
+            Keybinds.Init();
+            SceneHelper.OnWorldSceneLoaded += Manager.AddInputs;
+            SceneHelper.OnWorldSceneLoaded += PartPickerUI.DestroyCreatedParts;
+            SceneHelper.OnWorldSceneUnloaded += () => Manager.worldBuildActive = false;
         }
     }
 }
