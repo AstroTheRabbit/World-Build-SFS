@@ -2,6 +2,10 @@ using HarmonyLib;
 using SFS.World;
 using SFS.World.Maps;
 
+using System;
+using UnityEngine;
+using UnityEngine.Rendering;
+
 namespace WorldBuild.Patches
 {
     public static class Patches
@@ -14,7 +18,7 @@ namespace WorldBuild.Patches
         {
             static bool Prefix()
             {
-                return !Manager.draggingPart;
+                return !Manager.main.draggingPart;
             }
         }
 
@@ -26,7 +30,7 @@ namespace WorldBuild.Patches
         {
             static bool Prefix()
             {
-                return !Manager.worldBuildActive;
+                return !Manager.main.worldBuildActive;
             }
         }
 
@@ -38,7 +42,7 @@ namespace WorldBuild.Patches
         {
             static void Postfix()
             {
-                Manager.ExitBuild();
+                Manager.main.ExitBuild();
             }
         }
 
@@ -50,7 +54,7 @@ namespace WorldBuild.Patches
         {
             static void Prefix()
             {
-                Manager.ExitBuild();
+                Manager.main.ExitBuild();
             }
         }
     }

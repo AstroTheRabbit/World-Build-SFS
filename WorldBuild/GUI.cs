@@ -62,13 +62,13 @@ namespace WorldBuild.GUI
 
             if (createdPartsHolder == null)
             {
-                createdPartsHolder = new GameObject("World Build - Created Parts Holder").transform;
+                createdPartsHolder = new GameObject("World Build: Created Parts Holder").transform;
                 Object.DontDestroyOnLoad(createdPartsHolder.gameObject);
             }
 
             DestroyUI();
 
-            GUIHolder = Builder.CreateHolder(Builder.SceneToAttach.CurrentScene, "WorldBuild - UI Holder").transform;
+            GUIHolder = Builder.CreateHolder(Builder.SceneToAttach.CurrentScene, "WorldBuild: UI Holder").transform;
             window_main = UIToolsBuilder.CreateClosableWindow
             (
                 GUIHolder,
@@ -167,7 +167,7 @@ namespace WorldBuild.GUI
                     button.onHold += (OnInputStayData data) =>
                     {
                         if (data.inputType == InputType.MouseLeft)
-                            Manager.CreateNewPart(variant, data.position.World(0f));
+                            Manager.main.CreateNewPart(variant, data.position.World(0f));
                     };
                     button.onClick += () => Debug.Log("TODO: Part info box.");
                     button.onRightClick += () => Debug.Log("TODO: Part info box.");
@@ -226,7 +226,7 @@ namespace WorldBuild.GUI
         {
             GameObject go = new GameObject
             (
-                $"World Build: Part Icon - {part.name}",
+                $"World Build: Part Icon ({part.name})",
                 typeof(RectTransform),
                 typeof(CanvasRenderer),
                 typeof(RawImage)

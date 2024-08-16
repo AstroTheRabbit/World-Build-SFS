@@ -24,6 +24,7 @@ namespace WorldBuild.Settings
         public static Keybinds main;
 
         public Key toggleWorldBuild = Key.Ctrl_(KeyCode.B);
+        public Key tryBuildPart = KeyCode.B;
 
         public static void Init()
         {
@@ -35,13 +36,15 @@ namespace WorldBuild.Settings
         {
             Keybinds defaults = new Keybinds();
 
-			CreateUI_Text("Smart SAS");
+			CreateUI_Text("World Build");
             CreateUI_Keybinding(toggleWorldBuild, defaults.toggleWorldBuild, "Toggle World Build");
+            CreateUI_Keybinding(tryBuildPart, defaults.tryBuildPart, "Try Build Part");
         }
 
         public static void AssignFunctions()
         {
-            AddOnKeyDown_World(main.toggleWorldBuild, Manager.ToggleBuild);
+            AddOnKeyDown_World(main.toggleWorldBuild, Manager.main.ToggleBuild);
+            AddOnKeyDown_World(main.tryBuildPart, Manager.main.TryBuildPart);
         }
     }
 }

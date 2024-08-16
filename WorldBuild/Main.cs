@@ -32,9 +32,14 @@ namespace WorldBuild
         public override void Load()
         {
             Keybinds.Init();
-            SceneHelper.OnWorldSceneLoaded += Manager.AddInputs;
+
+            GameObject go = new GameObject("World Build: Manager");
+            Object.DontDestroyOnLoad(go);
+            Manager.main = go.AddComponent<Manager>();
+
+            SceneHelper.OnWorldSceneLoaded += Manager.main.AddInputs;
             SceneHelper.OnWorldSceneLoaded += PartPickerUI.DestroyCreatedParts;
-            SceneHelper.OnWorldSceneUnloaded += () => Manager.worldBuildActive = false;
+            SceneHelper.OnWorldSceneUnloaded += () => Manager.main.worldBuildActive = false;
         }
     }
 }
