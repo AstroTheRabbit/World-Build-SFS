@@ -225,8 +225,6 @@ namespace WorldBuild
             JointGroup group = new JointGroup(new List<PartJoint>(), new List<Part>() { heldPart });
             Rocket rocket = Instantiate(AccessTools.StaticFieldRefAccess<RocketManager, Rocket>("prefab"));
             
-            // rocket.rocketName = "";
-            Debug.Log($"INIT: {rocket.location.Value != null}");
             rocket.physics.SetLocationAndState
             (
                 new Location
@@ -238,9 +236,7 @@ namespace WorldBuild
                 ),
                 false
             );
-            Debug.Log($"PHYS: {rocket.location.Value != null}");
             rocket.stats.Load(-1);
-            Debug.Log($"STAT: {rocket.location.Value != null}");
             rocket.SetJointGroup(group);
             heldPart.transform.localPosition = Vector3.zero;
 
